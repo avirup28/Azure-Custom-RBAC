@@ -1,0 +1,35 @@
+
+<# Object ID for Groups just for reference
+SOCG-Global = <id>
+SOTG-Global = <id> 
+#>
+
+$AppGs = Get-AzureRmResource | Where-Object {$PSItem.ResourceType -eq "Microsoft.Network/applicationGateways"}  | Select Name , ResourceGroupName
+
+foreach ($AppG in $AppGs) {
+
+$RG = $AppG.ResourceGroupName
+$Name = $AppG.Name
+
+
+$ID = (Get-AzureRmRoleAssignment -ResourceGroupName $RG -ResourceName $Name -ResourceType 'Microsoft.Network/applicationGateways').ObjectId 
+
+if ($ID -notcontains '<id>') {
+
+New-AzureRmRoleAssignment -ObjectId '<id>' -RoleDefinitionName 'PG CloudOperations Contributor' -ResourceName $Name -ResourceType 'Microsoft.Network/applicationGateways'  -ResourceGroupName $RG
+Write-Host "Giving PG CloudOperations Contributor access to Group SOCG-Gloal in $Name"
+                                                             }
+
+if ($ID -notcontains '<id>') {
+
+New-AzureRmRoleAssignment -ObjectId '<id>' -RoleDefinitionName 'PG CloudOperations Contributor' -ResourceName $Name -ResourceType 'Microsoft.Network/applicationGateways'  -ResourceGroupName $RG
+Write-Host "Giving PG CloudOperations Contributor access to Group SOTG-Gloal in $Name"
+
+                                                             }
+
+
+                      }
+                      
+                      
+                      
+For more information please visit https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-powershell                        
