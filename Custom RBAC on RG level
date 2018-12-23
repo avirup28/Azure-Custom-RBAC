@@ -1,0 +1,27 @@
+
+	$Conn = Get-AutomationConnection -Name AzureRunAsConnection
+	Add-AzureRMAccount -ServicePrincipal -Tenant $Conn.TenantID `
+-ApplicationID $Conn.ApplicationID -CertificateThumbprint $Conn.CertificateThumbprint
+
+
+$RGs = Get-AzureRmResourceGroup | Where-Object {$PSItem.Tags.Keys -eq "Support_Model" -and $PSItem.Tags.Values -like "Gold"} | Select ResourceGroupName
+
+foreach ($RG in $RGs) {
+
+
+$RoleNames = Get-AzureRmRoleAssignment -ResourceGroupName $RG.ResourceGroupName | select RoleDefinitionName , ObjectId , ObjectType
+
+foreach ($RoleName in $RoleNames) {
+
+$RDN = $RoleName.RoleDefinitionName
+$ID = $RoleName.ObjectId
+$Type = $RoleName.ObjectType
+
+if ($RDN -eq 'Contributor' -and $Type -eq 'Group') {
+
+Remove-AzureRmRoleAssignment -ResourceGroupName $RG.ResourceGroupName -ObjectId $ID -RoleDefinitionName $RDN 
+Write-Output "$RDN has been removed $($RG.ResourceGroupName))"
+                                                   }
+
+                                  }
+                        }
